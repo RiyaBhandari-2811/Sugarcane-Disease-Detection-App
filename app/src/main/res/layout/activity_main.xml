@@ -17,7 +17,6 @@
         tools:ignore="MissingConstraints"
         tools:layout_editor_absoluteX="16dp" />
 
-
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="350dp"
@@ -61,6 +60,20 @@
         app:layout_constraintStart_toStartOf="@+id/imageView"
         app:layout_constraintTop_toBottomOf="@+id/imageView2"
         app:layout_constraintVertical_bias="0.375" />
+
+    <Button
+        android:id="@+id/changeMyLang"
+        android:backgroundTint="#97DA7C"
+        android:textColor="@color/black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/changelng"
+        app:layout_constraintBottom_toTopOf="@+id/imageView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.901"
+        app:layout_constraintStart_toEndOf="@+id/logo"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.172" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
