@@ -1,10 +1,13 @@
 <resources>
+    <!--to support multiple languages-->
+
     <string name="app_name">Sugarcane Disease Detection</string>
     <string name="sugar">SUGAR</string>
     <string name="cane">CANE</string>
     <string name="disease_detection">Disease Detection</string>
     <string name="select_img">Click To Select An Image</string>
     <string name="learn_more_about_it">Learn More About It</string>
+    <string name="changelng">Change Language</string>
     <string name="redStripCausesDesc">Caused by the fungus Colletotrichum falcatum (Glomerella tucumanensis). Hot dry weather for completeion of disease cycle and wet conditions for pathogens to develop. Temperature range: 29.4 to 31 degree Celcius.</string>
     <string name="redStripDesc">The red rot disease, which is also known as the cancer of sugarcane crops, can wipe out entire standing crops. The infection can reduce the sugarcane\'s weight by 29 per cent and result in poor quality of cane. As much as 25-75% sucrose is reduced in diseased cane as compared to the healthy cane. It is characterized by interrupted red and white patches within the cane along with a sour alcoholic odour when the cane is split open.</string>
     <string name="causes">Causes</string>

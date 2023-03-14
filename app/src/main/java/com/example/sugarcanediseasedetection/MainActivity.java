@@ -1,16 +1,24 @@
 package com.example.sugarcanediseasedetection;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.github.dhaval2404.imagepicker.ImagePicker;
+
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     static final String USER_IMG_KEY = "UserImgKey";
@@ -18,9 +26,73 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        loadLocale();
         setContentView(R.layout.activity_main);
+
+        //change actionbar title or else it will be default
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle(getResources().getString(R.string.app_name));
+
+        Button changelng = findViewById(R.id.changeMyLang);
+        changelng.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //show alert dialog to display list of languages
+                showChangeLanguageDialog();
+            }
+        });
         
     }
+
+    private void showChangeLanguageDialog() {
+        final String[] listItems = {"हिंदी" , "मराठी", "English"}; //array of languages
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
+        mBuilder.setTitle("Choose Language...");
+        mBuilder.setSingleChoiceItems(listItems, -1, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (i == 0)
+                {
+                    setLocale("hi");
+                    recreate();
+                }
+                if (i == 1)
+                {
+                    setLocale("ma");
+                    recreate();
+                }
+                if (i == 2)
+                {
+                    setLocale("en");
+                    recreate();
+                }
+                //dismiss alert box
+                dialogInterface.dismiss();
+            }
+        });
+        AlertDialog mDialog = mBuilder.create();
+        mDialog.show();
+    }
+
+    private void setLocale(String lang) {
+        Locale locale = new Locale(lang);
+        Locale.setDefault(locale);
+        Configuration config = new Configuration();
+        config.locale = locale;
+        getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
+        //save data to share preferences
+        SharedPreferences.Editor editor = getSharedPreferences("Settings", MODE_PRIVATE).edit();
+        editor.putString("My_Lang", lang);
+        editor.apply();
+
+    }
+//load lang saved in shared p
+    public void loadLocale() {
+        SharedPreferences prefs = getSharedPreferences("Settings", Activity.MODE_PRIVATE);
+        String language = prefs.getString("My_Lang", "");
+        setLocale(language);
+    }
+
 
     public void addImg(View view) {
         ImagePicker.with(MainActivity.this)
