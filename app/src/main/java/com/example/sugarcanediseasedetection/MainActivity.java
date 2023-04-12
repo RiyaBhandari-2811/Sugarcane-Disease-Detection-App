@@ -10,8 +10,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -28,10 +30,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         loadLocale();
         setContentView(R.layout.activity_main);
-
-        //change actionbar title or else it will be default
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle(getResources().getString(R.string.app_name));
 
         Button changelng = findViewById(R.id.changeMyLang);
         changelng.setOnClickListener(new View.OnClickListener() {
@@ -58,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if (i == 1)
                 {
-                    setLocale("ma");
+                    setLocale("mr");
                     recreate();
                 }
                 if (i == 2)
@@ -84,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = getSharedPreferences("Settings", MODE_PRIVATE).edit();
         editor.putString("My_Lang", lang);
         editor.apply();
-
     }
 //load lang saved in shared p
     public void loadLocale() {
