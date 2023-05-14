@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     Bitmap bitmap;
     TextView result;
 
-    int imageSize = 512;
+    int imageSize = 224;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,22 +148,24 @@ public class MainActivity extends AppCompatActivity {
 
 
             // Creates inputs for reference.
-            TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 512, 512, 3}, DataType.FLOAT32);
+            // Creates inputs for reference.
+            TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, imageSize, imageSize, 3}, DataType.FLOAT32);
             ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4 * imageSize * imageSize * 3);
             byteBuffer.order(ByteOrder.nativeOrder());
             int[] intValues = new int[imageSize * imageSize];
             bitmap.getPixels(intValues, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
             int pixels = 0;
-            // Iterate over each pixel and extract RGB values . add those values individually to byte buffer .
+// Iterate over each pixel and extract RGB values. Add those values individually to the byte buffer.
             for (int i = 0; i < imageSize; i++) {
                 for (int j = 0; j < imageSize; j++) {
                     int val = intValues[pixels++]; // RGB Values
-                    byteBuffer.putFloat(((val >> 16) & 0xFF) * (1.f / 1));
-                    byteBuffer.putFloat(((val >> 8) & 0xFF) * (1.f / 1));
-                    byteBuffer.putFloat((val & 0xFF) * (1.f / 1));
+                    byteBuffer.putFloat(((val >> 16) & 0xFF) * (1.f / 255));
+                    byteBuffer.putFloat(((val >> 8) & 0xFF) * (1.f / 255));
+                    byteBuffer.putFloat((val & 0xFF) * (1.f / 255));
                 }
             }
             inputFeature0.loadBuffer(byteBuffer);
+
 
             // Our result are stored in outputFeature0
             Model.Outputs outputs = model.process(inputFeature0);
@@ -182,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             // Labels that our model is trained for
-            String[] labels = {"Red Strip" , "Leaf Scald" , "Rust"};
+            String[] labels = {"Red Strip" , "Healthy" , "Rust"};
             result.setText(labels[maxPos]);
 
             // Releases model resources if no longer used.
