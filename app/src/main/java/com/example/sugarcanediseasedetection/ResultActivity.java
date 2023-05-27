@@ -12,10 +12,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class ResultActivity extends AppCompatActivity {
-    ImageView diseaseImg ;
-    TextView diseaseName ;
-    Button infoBtn ;
-    String DiseaseName ;
+    ImageView diseaseImg;
+    TextView diseaseName;
+    Button infoBtn;
+    String DiseaseName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,6 +31,9 @@ public class ResultActivity extends AppCompatActivity {
         Uri userImg = (Uri) iGetData.getParcelableExtra(MainActivity.USER_IMG_KEY);
         diseaseImg.setImageURI(userImg);
 
+        // Disease Name
+        diseaseName.setText(getIntent().getStringExtra(MainActivity.DISEASE_NAME_KEY));
+
         // Edge Case : If inappropriate disease is
 
         // InfoBtn Logic
@@ -41,23 +45,24 @@ public class ResultActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                if(DiseaseName.equals("Red Strip")){
-                    Intent goToInfo = new Intent(ResultActivity.this , RedStrip.class);
+                if (DiseaseName.equals("Red rot")) {
+                    Intent goToInfo = new Intent(ResultActivity.this, RedStrip.class);
                     startActivity(goToInfo);
                     finish();
-                }else if (DiseaseName.equals("Leaf Scald")) {
-                    Intent goToInfo = new Intent(ResultActivity.this , LeafScald.class);
+                } else if (DiseaseName.equals("Leaf Scald")) {
+                    Intent goToInfo = new Intent(ResultActivity.this, LeafScald.class);
                     startActivity(goToInfo);
                     finish();
-                }else if (DiseaseName.equals("Rust")) {
-                    Intent goToInfo = new Intent(ResultActivity.this , Rust.class);
+                } else if (DiseaseName.equals("Rust")) {
+                    Intent goToInfo = new Intent(ResultActivity.this, Rust.class);
                     startActivity(goToInfo);
                     finish();
-                }else if (DiseaseName.equals("Healthy")) {
-                    Intent goToInfo = new Intent(ResultActivity.this , Healthy.class);
+                } else if (DiseaseName.equals("Healthy")) {
+                    Intent goToInfo = new Intent(ResultActivity.this, Healthy.class);
+                    infoBtn.setEnabled(false);
                     startActivity(goToInfo);
                     finish();
-                }else {
+                } else {
                     infoBtn.setEnabled(false);
                     Toast.makeText(ResultActivity.this, "Inappropriate Disease",
                             Toast.LENGTH_SHORT).show();

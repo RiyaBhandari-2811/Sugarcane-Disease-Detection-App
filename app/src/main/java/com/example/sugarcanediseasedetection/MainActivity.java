@@ -1,7 +1,6 @@
 package com.example.sugarcanediseasedetection;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
@@ -10,22 +9,21 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
+
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.example.sugarcanediseasedetection.ml.Model;
+import com.example.sugarcanediseasedetection.ml.FinalModel;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 
 import org.tensorflow.lite.DataType;
-import org.tensorflow.lite.support.image.TensorImage;
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 
 import java.io.IOException;
@@ -35,11 +33,14 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     static final String USER_IMG_KEY = "UserImgKey";
+    static final String DISEASE_NAME_KEY = "DiseaseNameKey";
     static final int REQ_CODE = 100;
     Bitmap bitmap;
-    TextView result;
+    Uri uri;
 
-    int imageSize = 512;
+    int imageSize = 224;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +48,8 @@ public class MainActivity extends AppCompatActivity {
         loadLocale();
         setContentView(R.layout.activity_main);
 
+
         Button changelng = findViewById(R.id.changeMyLang);
-        result = (TextView) findViewById(R.id.resultt);
         changelng.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -116,8 +117,9 @@ public class MainActivity extends AppCompatActivity {
     // Data => User data
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+
         super.onActivityResult(requestCode, resultCode, data);
-        Uri uri = data.getData(); // User selected image will be in data and it will return the
+        uri = data.getData(); // User selected image will be in data and it will return the
         // data in URI format
 
         // URI to bitmap
@@ -128,13 +130,11 @@ public class MainActivity extends AppCompatActivity {
         }
         if (resultCode == Activity.RESULT_OK) {
             //Image Uri will not be null for RESULT_OK
-            // Passing Data
-//            Intent iPassData = new Intent(MainActivity.this , ResultActivity.class);
-//            iPassData.putExtra(USER_IMG_KEY , uri);
-//            startActivity(iPassData);
+
             // Resizing our bitmap
             bitmap = Bitmap.createScaledBitmap(bitmap, imageSize, imageSize, false);
             modelFunction(bitmap);
+
         } else if (resultCode == ImagePicker.RESULT_ERROR) {
             Toast.makeText(this, ImagePicker.getError(data), Toast.LENGTH_SHORT).show();
         } else {
@@ -142,48 +142,62 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void modelFunction(Bitmap bitmap) {
+    public void modelFunction(Bitmap image) {
         try {
-            Model model = Model.newInstance(MainActivity.this);
 
+            FinalModel model = FinalModel.newInstance(MainActivity.this);
 
             // Creates inputs for reference.
-            TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 512, 512, 3}, DataType.FLOAT32);
+            TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 224, 224, 3}, DataType.FLOAT32);
             ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4 * imageSize * imageSize * 3);
             byteBuffer.order(ByteOrder.nativeOrder());
+
             int[] intValues = new int[imageSize * imageSize];
-            bitmap.getPixels(intValues, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
-            int pixels = 0;
-            // Iterate over each pixel and extract RGB values . add those values individually to byte buffer .
+            image.getPixels(intValues, 0, image.getWidth(), 0, 0, image.getWidth(), image.getHeight());
+            int pixel = 0;
+            //iterate over each pixel and extract R, G, and B values. Add those values individually to the byte buffer.
             for (int i = 0; i < imageSize; i++) {
                 for (int j = 0; j < imageSize; j++) {
-                    int val = intValues[pixels++]; // RGB Values
+                    int val = intValues[pixel++]; // RGB
                     byteBuffer.putFloat(((val >> 16) & 0xFF) * (1.f / 1));
                     byteBuffer.putFloat(((val >> 8) & 0xFF) * (1.f / 1));
                     byteBuffer.putFloat((val & 0xFF) * (1.f / 1));
                 }
             }
+
             inputFeature0.loadBuffer(byteBuffer);
 
-            // Our result are stored in outputFeature0
-            Model.Outputs outputs = model.process(inputFeature0);
             // Runs model inference and gets result.
+            FinalModel.Outputs outputs = model.process(inputFeature0);
             TensorBuffer outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();
 
-           float[] confidences = outputFeature0.getFloatArray();
-           // Find the index of the class with the biggest confidence .
+            float[] confidences = outputFeature0.getFloatArray();
+            // find the index of the class with the biggest confidence.
             int maxPos = 0;
-            float maxConfidence = 0 ;
+            float maxConfidence = 0;
             for (int i = 0; i < confidences.length; i++) {
-                if (confidences[i] > maxConfidence){
+                if (confidences[i] > maxConfidence) {
+                    maxPos = i;
                     maxConfidence = confidences[i];
-                    maxPos = i ;
                 }
             }
 
-            // Labels that our model is trained for
-            String[] labels = {"Red Strip" , "Leaf Scald" , "Rust"};
-            result.setText(labels[maxPos]);
+            StringBuilder stringBuilder = new StringBuilder();
+            for (float value : confidences) {
+                stringBuilder.append(value).append(", ");
+            }
+
+            String result = stringBuilder.toString();
+
+            Log.d("Array =====", result);
+
+            String[] classes = {"Healthy", "Red rot", "Rust"};
+            String diseaseName = classes[maxPos];
+
+            Intent iPassData = new Intent(MainActivity.this, ResultActivity.class);
+            iPassData.putExtra(USER_IMG_KEY, uri);
+            iPassData.putExtra(DISEASE_NAME_KEY, diseaseName);
+            startActivity(iPassData);
 
             // Releases model resources if no longer used.
             model.close();
@@ -191,5 +205,4 @@ public class MainActivity extends AppCompatActivity {
             // TODO Handle the exception
         }
     }
-
 }
