@@ -58,14 +58,15 @@ public class ResultActivity extends AppCompatActivity {
                     startActivity(goToInfo);
                     finish();
                 } else if (DiseaseName.equals("Healthy")) {
-                    Intent goToInfo = new Intent(ResultActivity.this, Healthy.class);
                     infoBtn.setEnabled(false);
-                    startActivity(goToInfo);
+                    Toast.makeText(ResultActivity.this, "Your Leaf is  Healthy",
+                            Toast.LENGTH_SHORT).show();
                     finish();
                 } else {
                     infoBtn.setEnabled(false);
                     Toast.makeText(ResultActivity.this, "Inappropriate Disease",
                             Toast.LENGTH_SHORT).show();
+                    finish();
                 }
             }
         });

@@ -18,19 +18,34 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/red_strip_sugarcane" />
 
+
+    <TextView
+        android:id="@+id/diseaseDetected"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:fontFamily="@font/almarai_bold"
+        android:letterSpacing="0.1"
+        android:text="Disease Detected :"
+        android:textColor="@color/brown_txt"
+        android:textSize="30sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/diseaseImg" />
+
     <TextView
         android:id="@+id/diseaseName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="84dp"
-        android:textColor="@color/brown_txt"
-        android:text="Rust"
-        android:textSize="35sp"
-        android:letterSpacing="0.1"
+        android:layout_marginTop="20dp"
         android:fontFamily="@font/almarai_bold"
+        android:letterSpacing="0.1"
+        android:text="Rust"
+        android:textColor="@color/brown_txt"
+        android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/diseaseImg" />
+        app:layout_constraintTop_toBottomOf="@+id/diseaseDetected" />
 
     <Button
         android:id="@+id/infoBtn"

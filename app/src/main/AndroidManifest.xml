@@ -11,7 +11,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SugarcaneDiseaseDetection">
         <activity android:name=".Rust"></activity>
-        <activity android:name=".Healthy" />
         <activity android:name=".LeafScald" />
         <activity android:name=".RedStrip" />
         <activity android:name=".ResultActivity" />
